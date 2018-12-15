@@ -1,6 +1,9 @@
 package com.company;
 
+import org.w3c.dom.ls.LSException;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -11,7 +14,9 @@ public class Main {
         products.add(new Product("C", "CAT2", 20));
         products.add(new Product("D", "CAT2", 30));
 
-        groupByCategoryAveragePrice(products);
+        List<Node> nodes = groupByCategoryAveragePrice(products);
+
+        nodes.forEach(node -> System.out.println(node.getName() + " -> " + node.getAverage()));
     }
 
     /**
@@ -27,23 +32,19 @@ public class Main {
      */
 
     public static List<Node> groupByCategoryAveragePrice(List<Product> products) {
-        Map<String, Double> helper = new HashMap<>();
+        return products.stream()
+            .collect(Collectors.groupingBy(Product::getCategory))
+            .entrySet()
+            .stream()
+            .map(entry -> new Node(entry.getKey(), calcAveragePrice(entry.getValue())))
+            .sorted(Comparator.comparingDouble(Node::getAverage))
+            .collect(Collectors.toList());
+    }
 
-        for (Product product : products){
-            if (!helper.containsKey(product.getCategory())){
-                helper.put(product.getCategory(), (double) product.getPrice());
-            } else {
-                helper.put(product.getCategory(), helper.get(product.getCategory()) + product.getPrice());
-            }
-        }
-
-        List<Node> nodes = new ArrayList<>();
-        Iterator iterator = helper.entrySet().iterator();
-        while (iterator.hasNext()){
-            Map.Entry node = (Map.Entry) iterator.next();
-            nodes.add(new Node((String) node.getKey(), (Double) node.getValue()));
-        }
-
-        return nodes;
+    private static double calcAveragePrice(List<Product> products) {
+        return products.stream()
+                .mapToInt(Product::getPrice)
+                .average()
+                .orElse(0);
     }
 }
