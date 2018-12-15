@@ -36,7 +36,7 @@ public class Main {
             .collect(Collectors.groupingBy(Product::getCategory))
             .entrySet()
             .stream()
-            .map(entry -> new Node(entry.getKey(), calcAveragePrice(entry.getValue())))
+            .map(item -> new Node(item.getKey(), calcAveragePrice(item.getValue())))
             .sorted(Comparator.comparingDouble(Node::getAverage))
             .collect(Collectors.toList());
     }
@@ -45,6 +45,6 @@ public class Main {
         return products.stream()
                 .mapToInt(Product::getPrice)
                 .average()
-                .orElse(0);
+                .orElse(-1);
     }
 }
