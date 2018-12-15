@@ -36,12 +36,12 @@ public class Main {
             .collect(Collectors.groupingBy(Product::getCategory))
             .entrySet()
             .stream()
-            .map(item -> new Node(item.getKey(), calcAveragePrice(item.getValue())))
+            .map(item -> new Node(item.getKey(), calculateAveragePrice(item.getValue())))
             .sorted(Comparator.comparingDouble(Node::getAverage))
             .collect(Collectors.toList());
     }
 
-    private static double calcAveragePrice(List<Product> products) {
+    private static double calculateAveragePrice(List<Product> products) {
         return products.stream()
                 .mapToInt(Product::getPrice)
                 .average()
